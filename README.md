@@ -1,5 +1,5 @@
 # freePie_scripts
-Python scripts to customize gamepads on Windows with. Tested on DualShock3 + nefarius' scpToolkit + freePIE + vJoy.
+Python scripts to customize gamepads on Windows. Tested on DualShock3 + nefarius' scpToolkit + freePIE + vJoy.
 
 ## Script notes
 Buttons assignments aren't implemented yet. I'm using the scpToolkit's virtual Xbox360 Controller assignments for that.
