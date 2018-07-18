@@ -12,3 +12,15 @@ Buttons assignments aren't implemented yet. I'm using the scpToolkit's virtual X
 * scpToolkit - https://github.com/nefarius/ScpToolkit
 * freePIE - https://github.com/AndersMalmgren/FreePIE
 * vJoy - http://vjoystick.sourceforge.net
+
+## (Português)
+Scripts em Python para customizar controles no Windows. [vJoy](http://vjoystick.sourceforge.net/site/index.php/download-a-install/download) e [freePie](https://github.com/AndersMalmgren/FreePIE/releases) são obrigatórios para que qualquer dos scripts funcionem. Para usar os scripts para controles DualShock3/XboxOne, você precisará instalar o [ScpToolkit](https://github.com/nefarius/ScpToolkit/releases) do nefarius.
+
+## Notas
+As atribuições dos botões ainda não estão implementadas. Estou usando as atribuições padrão do controle virtual do Xbox360 para isso.
+
+* [race_ds3.py](https://github.com/bnoleto/freePie_scripts/blob/master/race_ds3.py): Script básico com redução de centro. Pode ser utilizado em jogos de corrida.
+* [(new) race_mouse.py](https://github.com/bnoleto/freePie_scripts/blob/master/race_mouse.py): Permite que você utilize o mouse para controlar precisamente a direção em jogos de corrida, fora algumas atribuições de tecla para uma aceleração suave. Funciona incrivelmente bem em jogos tipo F1 2017 e simuladores como Project Cars. Embora seja um parto pra configurar os eixos nesses jogos, os resultados são quase perfeitos.
+  * *Dica: Coloque o DPI do seu mouse entre 1600-3200dpi para melhor performance. No meu caso, 1600dpi é ótimo no Project Cars, enquanto 3200 ficou muito bom no F1 2017. Use o BOTÃO ESQUERDO DO MOUSE para acelerar, e o BOTÃO DIREITO DO MOUSE para frear. Caso você dê algum desses comandos enquanto pressiona SHIFT ESQUERDO, a taxa de incremento/decremento do eixo será maior, e se você fizer o mesmo enquanto pressiona CTRL ESQUERDO, a taxa de incremento/decremento do eixo será menor. A sensibilidade da direção nunca se altera.*
+* [(new) race_xone.py](https://github.com/bnoleto/freePie_scripts/blob/master/race_xone.py): Quase a mesma coisa do race_ds3, mas tentei fazer algumas alterações pra tentar tirar proveito da precisão do controle do XboxOne. Não sei muito bem por que eu fiz isso.
+* [xplane.py](https://github.com/bnoleto/freePie_scripts/blob/master/xplane.py): Script com redução de centro em todos os eixos. O eixo Y do analog direito é usado para aceleração em simuladores de vôo.
