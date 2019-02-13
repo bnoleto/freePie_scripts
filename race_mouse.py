@@ -26,7 +26,8 @@ if starting:
 		return ((abs(valorInicial)+abs(valorFinal))*10)/tempo
 		
 	def resetarEixo():
-		return -5500
+		#return -5500	# usar apenas no f1 2017
+		return 0
 
 	v = vJoy[0]
 	
@@ -44,16 +45,19 @@ if starting:
 
 # laço de funcionamento começa aqui
 
-# contador em milésimos (ms)
+ShiftEsq = keyboard.getKeyDown(Key.LeftShift)
+CtrlEsq = keyboard.getKeyDown(Key.LeftControl)
+
+# contador em milissegundos (ms)
 contador += 10
 if(contador >= 10000):
 	contador = 0
 
 eixoX += (int)(mouse.deltaX*1.6383)
 
-if(keyboard.getKeyDown(Key.LeftControl)):
+if(CtrlEsq):
 	tempoAcel = 1000
-elif(keyboard.getKeyDown(Key.LeftShift)):
+elif(ShiftEsq):
 	tempoAcel = 250
 else:
 	tempoAcel = 500
@@ -76,15 +80,14 @@ acelerador = limitar(acelerador)
 freio = limitar(freio)
 
 # associação dos eixos
-
 v.x = eixoX
 v.y = acelerador
 v.z = freio
 
-#v.setButton(0,j.getDown(0))
-#v.setButton(1,j.getDown(1))
-#v.setButton(2,j.getDown(2))
-#v.setButton(3,j.getDown(3))
+v.setButton(0,mouse.wheelDown)
+v.setButton(1,mouse.wheelUp)
+v.setButton(2,mouse.getButton(3))
+v.setButton(3,mouse.getButton(4))
 #v.setButton(4,j.getDown(4))
 #v.setButton(5,j.getDown(5))
 #v.setButton(6,j.getDown(6))
@@ -95,8 +98,11 @@ v.z = freio
 # debugging
 
 diagnostics.watch((int)(mouse.deltaX))
+diagnostics.watch(mouse.getButton(3))
+diagnostics.watch(mouse.getButton(4))
 diagnostics.watch(eixoX)
-diagnostics.watch(acelerador)
+diagnostics.watch(v.y)
+diagnostics.watch(v.z)
 diagnostics.watch(contador)
 diagnostics.watch(keyboard.getKeyDown(Key.LeftShift))
 diagnostics.watch(mouse.leftButton)
