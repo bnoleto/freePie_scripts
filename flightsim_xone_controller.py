@@ -10,7 +10,6 @@ if starting:
 	
 	AXIS_RANGE = 1000
 	
-	
 	LANGUAGE = locale.getdefaultlocale()[0]
 	
 	AXIS_MIN = -AXIS_RANGE
@@ -102,7 +101,7 @@ if(pad.x or pad.a):
 	else:
 		button_pressed = "a"
 		
-	button_pressed_before = True;
+	button_pressed_before = True
 			
 roll = convert(apply_deadzone(pad.leftStickX, 0.1))
 pitch = convert(apply_deadzone(pad.leftStickY, 0.1))
@@ -138,7 +137,6 @@ else:
 	v.dial = AXIS_CENTER
 
 # debugging
-
 diagnostics.watch(v.x)
 diagnostics.watch(v.y)
 diagnostics.watch(pitch)
@@ -148,5 +146,4 @@ diagnostics.watch(v.rz)
 diagnostics.watch(v.slider)
 diagnostics.watch(v.dial)
 diagnostics.watch(reverse_mode)
-
 diagnostics.watch(ground_mode)
