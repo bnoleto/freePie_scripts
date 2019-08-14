@@ -4,7 +4,7 @@ if starting:
 	
 	v = vJoy[0]
 
-	STEERING_SENSITIVITY = 0.2
+	STEERING_SENSITIVITY = 0.3
 	AXIS_RANGE = 1000
 
 	AXIS_MIN = -AXIS_RANGE
@@ -26,7 +26,7 @@ if starting:
 	throttle = AXIS_CENTER
 	brakes = AXIS_CENTER
 
-# laço de funcionamento começa aqui
+### laço de funcionamento começa aqui ###
 
 axis_x = limit(axis_x + (mouse.deltaX/1000)*STEERING_SENSITIVITY, -1.0, 1.0)
 

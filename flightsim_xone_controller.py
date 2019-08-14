@@ -103,14 +103,14 @@ if(pad.x or pad.a):
 		
 	button_pressed_before = True
 			
-roll = convert(apply_deadzone(pad.leftStickX, 0.1))
-pitch = convert(apply_deadzone(pad.leftStickY, 0.1))
+roll = convert(apply_deadzone(pad.rightStickX, 0.1))
+pitch = convert(apply_deadzone(pad.rightStickY, 0.1))
 yaw = convert(apply_deadzone((-pad.leftTrigger+pad.rightTrigger),0.1))
 
 if(reverse_mode):
-	thrust = limit(thrust + (convert(apply_deadzone(pad.rightStickY,0.1))/250), AXIS_MIN, AXIS_CENTER)
+	thrust = limit(thrust + (convert(apply_deadzone(pad.leftStickY,0.1))/250), AXIS_MIN, AXIS_CENTER)
 else:
-	thrust = limit(thrust + (convert(apply_deadzone(pad.rightStickY,0.1))/250), AXIS_CENTER, AXIS_MAX)
+	thrust = limit(thrust + (convert(apply_deadzone(pad.leftStickY,0.1))/250), AXIS_CENTER, AXIS_MAX)
 
 # associação dos eixos
 
