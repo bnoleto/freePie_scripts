@@ -4,7 +4,7 @@ if starting:
 	
 	v = vJoy[0]
 
-	STEERING_SENSITIVITY = 0.3
+	STEERING_SENSITIVITY = 0.1
 	AXIS_RANGE = 1000
 
 	AXIS_MIN = -AXIS_RANGE
@@ -40,17 +40,20 @@ elif(keyboard.getKeyDown(Key.LeftShift)):
 else:
 	increment_ratio = 0.01
 
-if(mouse.leftButton):
+if(mouse.leftButton and mouse.rightButton):
 	throttle = limit(throttle + increment_ratio, 0.0, 1.0)
-	brakes = limit(brakes - 0.015, 0.0, 1.0)
+	brakes = limit(brakes + increment_ratio*1000, 0.0, 1.0)
+elif(mouse.leftButton and not mouse.rightButton):
+	throttle = limit(throttle + increment_ratio, 0.0, 1.0)
+	#brakes = limit(brakes - 0.015, 0.0, 1.0)
+	brakes = 0
+elif(mouse.rightButton and not mouse.leftButton):
+	brakes = limit(brakes + increment_ratio*1000, 0.0, 1.0)
+	#throttle = limit(throttle - 0.015, 0.0, 1.0)
+	throttle = 0
 else:
 	throttle = limit(throttle - increment_ratio, 0.0, 1.0)
-	
-if(mouse.rightButton):
-	brakes = limit(brakes + increment_ratio, 0.0, 1.0)
-	throttle = limit(throttle - 0.015, 0.0, 1.0)
-else:
-	brakes = limit(brakes - increment_ratio, 0.0, 1.0)
+	brakes = limit(brakes - increment_ratio*1000, 0.0, 1.0)
 
 # associação dos eixos
 v.x = limit(axis_x*AXIS_RANGE, AXIS_MIN, AXIS_MAX)
