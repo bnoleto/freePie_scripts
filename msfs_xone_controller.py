@@ -1,6 +1,9 @@
 import locale
+from time import *
 
 if starting:
+
+	debug = True
 	
 	system.setThreadTiming(TimingTypes.HighresSystemTimer)
 	system.threadExecutionInterval = 5
@@ -17,8 +20,9 @@ if starting:
 	AXIS_CENTER = (AXIS_MIN+AXIS_MAX)/2
 
 	thrust = AXIS_CENTER
+	elevator_trim = AXIS_CENTER
+	rudder_trim = AXIS_CENTER
 	
-	fsx_reverser_counter = 0
 	cond = 0
 	
 	if(LANGUAGE == "pt_BR"):
@@ -39,13 +43,15 @@ if starting:
 		REVERSE_STRING = "reverse"
 		GROUNDMODE_STRING = "ground mode"
 	
-	reverse_mode = False
+	elevator_trim_mode = False
 	ground_mode = False
 	
 	button_pressed_before = False
 	button_pressed_current = False
 	
 	button_pressed = None
+	
+	nextEpoch = 0
 
 	def curve(input):
 		
@@ -71,11 +77,39 @@ if starting:
 			return AXIS_CENTER
 		else:
 			return axis
-
+	
+	def extend(axis,sec_axis):
+	
+		if axis == 0:
+			signal_primary = 1
+		else:
+			signal_primary = axis/abs(axis)
+		
+		if sec_axis == 0:
+			signal_secondary = 1
+		else:
+			signal_secondary = sec_axis/abs(sec_axis)
+	
+		difference = abs(abs(axis)-abs(sec_axis))
+		
+		return limit(signal_primary*(abs(axis)*(1 + ((AXIS_MAX-difference)/AXIS_MAX))), AXIS_MIN, AXIS_MAX)
+		
+	
+	def toPress(axis):
+		global nextEpoch
+		if(epoch > nextEpoch and axis >= 0.1):
+			nextEpoch = epoch + (1/(axis*0.01))
+			return True
+		else:
+			return False
+			
 # loop começa aqui
+
+epoch = round(time() * 1000)
 
 # button assignments
 
+v.setButton(1,pad.x)
 v.setButton(2,pad.leftShoulder)
 v.setButton(3,pad.rightShoulder)
 
@@ -87,43 +121,28 @@ v.setButton(8,pad.b)
 
 button_pressed_current = (pad.x or pad.a)
 
-v.setButton(0, False)
-v.setButton(1, False)
+elevator_trim_mode = pad.down
 
-#if(reverse_mode):
-if(True):
-	if(pad.leftStickY <= -0.1):
-		if(fsx_reverser_counter >= AXIS_RANGE/(-1*pad.leftStickY*AXIS_RANGE)):
-			v.setButton(0, True)
-			fsx_reverser_counter = 0
-	#if(pad.leftStickY >= 0.1 and thrust < 0):
-	if(pad.leftStickY >= 0.1):
-		if(fsx_reverser_counter >= AXIS_RANGE/(pad.leftStickY*AXIS_RANGE)):
-			v.setButton(1, True)
-			fsx_reverser_counter = 0
-	fsx_reverser_counter = fsx_reverser_counter + 1
+if(pad.x):
+	thrust = AXIS_CENTER
+
+if(elevator_trim_mode):
+	pitch = AXIS_CENTER
+	elevator_trim = limit(elevator_trim + (convert(apply_deadzone(pad.leftStickY,0.1))/250), AXIS_MIN, AXIS_MAX)
+	#rudder_trim = limit(rudder_trim + (convert(apply_deadzone(-pad.leftTrigger+pad.rightTrigger,0.1))/250), AXIS_MIN, AXIS_MAX)
+	#v.setButton(9,toPress(pad.rightTrigger))
+	#v.setButton(0,toPress(pad.leftTrigger))
 
 if(button_pressed_before and not button_pressed_current):
-	if(button_pressed == "x"):
-		if(thrust >= -100 and thrust <= 100):
-			reverse_mode = not reverse_mode
-			thrust = AXIS_CENTER
-			
-			if(reverse_mode):
-				speech.say(REVERSE_STRING + " " +ENABLED_STRING+".")
-				
-			else:
-				
-				speech.say(REVERSE_STRING + " " +DISABLED_STRING+".")
-				# v.setButton(0, False)
-				fsx_reverser_counter = 0
 	if(button_pressed == "a"):
 		ground_mode = not ground_mode
 
 		if(ground_mode):
-			speech.say(GROUNDMODE_STRING + " " +ENABLED_STRING+".")
+			diagnostics.notify("Ground Mode","Activated")
+			#speech.say(GROUNDMODE_STRING + " " +ENABLED_STRING+".")
 		else:
-			speech.say(GROUNDMODE_STRING + " " +DISABLED_STRING+".")
+			diagnostics.notify("Ground Mode","Deactivated")
+			#speech.say(GROUNDMODE_STRING + " " +DISABLED_STRING+".")
 			
 			
 	button_pressed_before = False
@@ -135,49 +154,47 @@ if(pad.x or pad.a):
 		button_pressed = "a"
 		
 	button_pressed_before = True
-			
-roll = convert(apply_deadzone(pad.rightStickX, 0.1))
-pitch = convert(apply_deadzone(pad.rightStickY, 0.1))
+
+roll = convert(apply_deadzone(pad.leftStickX, 0.1))
+if not elevator_trim_mode:
+	pitch = convert(apply_deadzone(pad.leftStickY, 0.1))
 yaw = convert(apply_deadzone((-pad.leftTrigger+pad.rightTrigger),0.1))
 
-if(reverse_mode):
-	thrust = limit(thrust + (convert(apply_deadzone(pad.leftStickY,0.1))/250), AXIS_MIN, AXIS_CENTER)
-else:
-	thrust = limit(thrust + (convert(apply_deadzone(pad.leftStickY,0.1))/250), AXIS_CENTER, AXIS_MAX)
+thrust = limit(thrust + (convert(apply_deadzone(pad.rightStickY,0.1))/250), AXIS_CENTER, AXIS_MAX)
 
 # associação dos eixos
-
-v.x = roll
-v.y = pitch
-v.z = yaw
-
-if(reverse_mode):
-	v.ry = AXIS_CENTER
-	v.rz = -thrust
-else:
-	v.ry = thrust
-	v.rz = AXIS_CENTER
 
 if(ground_mode):
 	v.slider = convert(apply_deadzone(pad.leftTrigger, 0.1))
 	v.dial = convert(apply_deadzone(pad.rightTrigger, 0.1))
+	
 	v.x = AXIS_CENTER
 	v.z = roll
 else:
-	v.x = roll
-	v.z = yaw
+
 	v.slider = AXIS_CENTER
 	v.dial = AXIS_CENTER
 
-# debugging
-diagnostics.watch(fsx_reverser_counter)
-diagnostics.watch(v.x)
-diagnostics.watch(v.y)
-diagnostics.watch(pitch)
-diagnostics.watch(v.z)
-diagnostics.watch(v.ry)
-diagnostics.watch(v.rz)
-diagnostics.watch(v.slider)
-diagnostics.watch(v.dial)
-diagnostics.watch(reverse_mode)
-diagnostics.watch(ground_mode)
+	v.x = extend(roll,pitch)
+	v.z = yaw
+
+v.y = extend(pitch,roll)
+
+v.rx = elevator_trim
+v.ry = thrust
+v.rz = rudder_trim
+
+if (debug):
+
+	diagnostics.watch(v.x)
+	diagnostics.watch(epoch)
+	diagnostics.watch(v.y)
+	diagnostics.watch(pitch)
+	diagnostics.watch(v.z)
+	diagnostics.watch(v.rx)
+	diagnostics.watch(v.ry)
+	diagnostics.watch(v.rz)
+	diagnostics.watch(v.slider)
+	diagnostics.watch(v.dial)
+	diagnostics.watch(elevator_trim_mode)
+	diagnostics.watch(ground_mode)
